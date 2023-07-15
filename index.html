@@ -32,10 +32,6 @@
       fieldset label {
         flex: 1;
         user-select: none;
-      }
-
-      fieldset label[for="width"],
-      fieldset label[for="height"] {
         cursor: ew-resize;
       }
 
@@ -48,7 +44,7 @@
     <fieldset>
       <div>
         <label for="radius">Radius</label>
-        <input type="number" value="24" id="radius" disabled />
+        <input type="number" value="24" id="radius" />
       </div>
       <div>
         <label for="width">Width</label>
@@ -59,13 +55,19 @@
         <input type="number" value="100" id="height" />
       </div>
     </fieldset>
-    <div id="canvas"></div>
+    <div>
+      <svg width="400" height="100" viewBox="0 0 400 100" id="squircleSVG">
+        <path
+          d="m 0 38.4 c 0 -13.4413 0 -20.1619 2.6158 -25.2958 c 2.301 -4.5159 5.9725 -8.1874 10.4884 -10.4884 c 5.1339 -2.6158 11.8545 -2.6158 25.2958 -2.6158 h 323.2 c 13.441 0 20.162 0 25.296 2.6158 c 4.516 2.301 8.187 5.9725 10.488 10.4884 c 2.616 5.1339 2.616 11.8545 2.616 25.2958 v 23.2 c 0 13.4413 0 20.1619 -2.616 25.2958 c -2.301 4.5159 -5.972 8.1874 -10.488 10.4884 c -5.134 2.6158 -11.855 2.6158 -25.296 2.6158 h -323.2 c -13.4413 0 -20.1619 0 -25.2958 -2.6158 c -4.5159 -2.301 -8.1874 -5.9725 -10.4884 -10.4884 c -2.6158 -5.1339 -2.6158 -11.8545 -2.6158 -25.2958 v -23.2 z"
+        />
+      </svg>
+    </div>
   </body>
   <script>
     // Extracted from Figma with corner radius set to 24px and smooth corners set
     // to 60%, then used https://yqnn.github.io/svg-path-editor/ to convert path
     // to relative
-    const make24pxCornerRadiusSquirclePath = (width, height) => {
+    const makeSquirclePath = (radius, width, height) => {
       return `m 0 38.4
     c 0 -13.4413 0 -20.1619 2.6158 -25.2958
     c 2.301 -4.5159 5.9725 -8.1874 10.4884 -10.4884
@@ -86,44 +88,24 @@
     z`;
     };
 
-    const makeSquircleSVG = (id, { width, height }) => {
-      const svgEl = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "svg"
-      );
+    const updateSquircle = () => {
+      const radius = document.querySelector("#radius").value;
+      const width = document.querySelector("#width").value;
+      const height = document.querySelector("#height").value;
+      const svgEl = document.querySelector("#squircleSVG");
+      const pathEl = document.querySelector("#squircleSVG path");
+
       svgEl.setAttribute("width", width);
       svgEl.setAttribute("height", height);
       svgEl.setAttribute("viewBox", `0 0 ${width} ${height}`);
-
-      const pathEl = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "path"
-      );
-      pathEl.setAttribute("d", make24pxCornerRadiusSquirclePath(width, height));
-
-      svgEl.append(pathEl);
-
-      return svgEl;
+      pathEl.setAttribute("d", makeSquirclePath(radius, width, height));
     };
 
-    const getValues = () => {
-      return {
-        width: document.querySelector("#width").value,
-        height: document.querySelector("#height").value,
-      };
-    };
+    document.querySelectorAll("input[type=number]").forEach((input) => {
+      input.addEventListener("input", updateSquircle);
+    });
 
-    const updateSquircle = () => {
-      document
-        .querySelector("#canvas")
-        .replaceChildren(makeSquircleSVG("squircle", getValues()));
-    };
-
-    updateSquircle();
-
-    document.querySelector("#width").addEventListener("input", updateSquircle);
-    document.querySelector("#height").addEventListener("input", updateSquircle);
-
+    // Increase by 8px on shift+arrow
     document.querySelectorAll("input[type=number]").forEach((input) => {
       input.addEventListener("keydown", ({ target, shiftKey, key }) => {
         if (key === "ArrowUp" && shiftKey) {
@@ -135,6 +117,7 @@
       });
     });
 
+    // Allow dragging on the label to act like a slider
     let dragInputTarget = null;
     const updateSquircleOnLabelDrag = ({ buttons, movementX }) => {
       if (buttons === 1) {
@@ -142,6 +125,13 @@
         updateSquircle();
       }
     };
+
+    document
+      .querySelector("label[for=radius]")
+      .addEventListener("mousedown", () => {
+        dragInputTarget = document.querySelector("#radius");
+        document.addEventListener("mousemove", updateSquircleOnLabelDrag);
+      });
 
     document
       .querySelector("label[for=width]")
