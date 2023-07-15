@@ -108,12 +108,10 @@
     // Increase by 8px on shift+arrow
     document.querySelectorAll("input[type=number]").forEach((input) => {
       input.addEventListener("keydown", ({ target, shiftKey, key }) => {
-        if (key === "ArrowUp" && shiftKey) {
+        if (key === "ArrowUp" && shiftKey)
           target.value = parseInt(target.value) + 7;
-        }
-        if (key === "ArrowDown" && shiftKey) {
+        if (key === "ArrowDown" && shiftKey)
           target.value = parseInt(target.value) - 7;
-        }
       });
     });
 
@@ -126,29 +124,15 @@
       }
     };
 
-    document
-      .querySelector("label[for=radius]")
-      .addEventListener("mousedown", () => {
-        dragInputTarget = document.querySelector("#radius");
+    document.querySelectorAll("label").forEach((label) => {
+      label.addEventListener("mousedown", () => {
+        const inputId = `#${label.getAttribute("for")}`;
+        dragInputTarget = document.querySelector(inputId);
         document.addEventListener("mousemove", updateSquircleOnLabelDrag);
       });
-
-    document
-      .querySelector("label[for=width]")
-      .addEventListener("mousedown", () => {
-        dragInputTarget = document.querySelector("#width");
-        document.addEventListener("mousemove", updateSquircleOnLabelDrag);
-      });
-
-    document
-      .querySelector("label[for=height]")
-      .addEventListener("mousedown", () => {
-        dragInputTarget = document.querySelector("#height");
-        document.addEventListener("mousemove", updateSquircleOnLabelDrag);
-      });
+    });
 
     document.addEventListener("mouseup", () => {
-      dragInputTarget = null;
       document.removeEventListener("mousemove", updateSquircleOnLabelDrag);
     });
   </script>
