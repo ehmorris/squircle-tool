@@ -52,14 +52,12 @@
       </div>
       <div>
         <label for="height">Height</label>
-        <input type="number" value="100" id="height" />
+        <input type="number" value="112" id="height" />
       </div>
     </fieldset>
     <div>
-      <svg width="400" height="100" viewBox="0 0 400 100" id="squircleSVG">
-        <path
-          d="m 0 38.4 c 0 -13.4413 0 -20.1619 2.6158 -25.2958 c 2.301 -4.5159 5.9725 -8.1874 10.4884 -10.4884 c 5.1339 -2.6158 11.8545 -2.6158 25.2958 -2.6158 h 323.2 c 13.441 0 20.162 0 25.296 2.6158 c 4.516 2.301 8.187 5.9725 10.488 10.4884 c 2.616 5.1339 2.616 11.8545 2.616 25.2958 v 23.2 c 0 13.4413 0 20.1619 -2.616 25.2958 c -2.301 4.5159 -5.972 8.1874 -10.488 10.4884 c -5.134 2.6158 -11.855 2.6158 -25.296 2.6158 h -323.2 c -13.4413 0 -20.1619 0 -25.2958 -2.6158 c -4.5159 -2.301 -8.1874 -5.9725 -10.4884 -10.4884 c -2.6158 -5.1339 -2.6158 -11.8545 -2.6158 -25.2958 v -23.2 z"
-        />
+      <svg id="squircleSVG">
+        <path />
       </svg>
     </div>
   </body>
@@ -101,6 +99,8 @@
       pathEl.setAttribute("d", makeSquirclePath(radius, width, height));
     };
 
+    updateSquircle();
+
     document.querySelectorAll("input[type=number]").forEach((input) => {
       input.addEventListener("input", updateSquircle);
     });
@@ -116,7 +116,7 @@
     });
 
     // Allow dragging on the label to act like a slider
-    let dragInputTarget = null;
+    let dragInputTarget;
     const updateSquircleOnLabelDrag = ({ buttons, movementX }) => {
       if (buttons === 1) {
         dragInputTarget.value = parseInt(dragInputTarget.value) + movementX;
